@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  web:
+    container_name: api
+    build:
+      context: ../
+      dockerfile: build/auth/Dockerfile
+    ports:
+      - "9000:9000"
+    environment:
+      - PORT=9000
+    depends_on:
+      - postgesql
+    restart: always
+    volumes:
+      - ./:/app
+    networks:
+      - dev-network
+
+  postgesql:
+    image: postgres:14.0-alpine
+    container_name: auth-postges
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=auth_db
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - dev-network
+
+networks:
+  dev-network:
+    name: dev-network
+    driver: bridge
+
+volumes:
+  postgres:
