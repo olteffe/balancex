@@ -1,0 +1,126 @@
+ // protoc -I=proto --go_out=proto proto/balance.proto
+
+ /**
+* Balance microservice.
+*
+* Microservice for working with the user balance.
+* It handles and stores financial data.
+*/
+
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package balanceService;
+option go_package = ".;balanceService";
+
+/**
+ * Represents the user balance
+ */
+message Balance {
+  string request_id = 1; /// Unique request operation ID(UUID v4).
+  string user_id = 2; /// Unique user ID(UUID v4).
+  string currency = 3; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
+  int64 amount = 4; /// Change user balance. A negative number means a decrease in the user's balance.
+  google.protobuf.Timestamp created_at = 5; /// Time of processing. Format will be determined later.
+}
+
+/**
+ * Represents the transaction
+ */
+message Transaction {
+  string request_id = 1; /// Unique request operation ID(UUID v4).
+  string from = 2; /// Source of account change.
+  string description = 3; /// Transaction description.
+  int64 amount = 4; /// Change user balance. A negative number means a decrease in the user's balance.
+  google.protobuf.Timestamp created_at = 5; /// Time of processing. Format will be determined later.
+}
+
+/**
+ * Represents request for accrual or reduction of money
+ */
+message OperationRequest {
+  string request_id = 1; /// Unique request operation ID(UUID v4).
+  string user_id = 2;  /// Unique user ID(UUID v4).
+  string currency = 3; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
+  int64 amount = 4; /// Change user balance. A negative number means a decrease in the user's balance.
+  google.protobuf.Timestamp created_at = 5; /// Time of processing. Format will be determined later.
+}
+
+/**
+ * Represents operation response
+ */
+message OperationResponse {
+  string request_id = 1; /// Unique request operation ID(UUID v4).
+  string status = 2; /// State change status
+}
+
+/**
+ * Represents transfer request from one user to another
+ */
+message TransferRequest {
+  string request_id = 1; /// Unique request operation ID(UUID v4).
+  string sender_id = 2; /// Unique sender ID(UUID v4).
+  string recipient_id = 3; /// Unique receiver ID(UUID v4).
+  string currency = 4; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
+  uint64 amount = 5; /// Change user balance. A negative number means a decrease in the user's balance.
+  google.protobuf.Timestamp created_at = 6; /// Time of processing. Format will be determined later.
+}
+
+/**
+ * Represents transfer response
+ */
+message TransferResponse {
+  string request_id = 1; /// Unique request operation ID(UUID v4).
+  string status = 2; /// State change status
+}
+
+/**
+ * Represents user balance request
+ */
+message GetBalanceRequest {
+  string request_id = 1; /// Unique request operation ID(UUID v4).
+  string user_id = 2; /// Unique user ID(UUID v4).
+}
+
+/**
+ * Represents user balance response
+ */
+message GetBalanceResponse {
+  string request_id = 1; /// Unique request operation ID(UUID v4).
+  Balance balance = 2; /// The users balance.
+  string status = 3; /// State change status.
+}
+
+/**
+ * Its a request for a list of transactions with pagination and sorting
+ */
+message TransactionRequest {
+  string request_id = 1; /// Unique request operation ID(UUID v4).
+  string user_id = 2;  /// Unique user ID(UUID v4).
+  string currency = 3; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
+  uint64 page = 4; /// Page number.
+  uint64 size = 5; /// Page size.
+}
+
+/**
+ * Represents sorted user transactions
+ */
+ message TransactionResponse {
+   string request_id = 1; /// Unique request operation ID(UUID v4).
+   string user_id = 2;  /// Unique user ID(UUID v4).
+   string currency = 3; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
+   repeated Transaction transaction = 4; /// List of transactions.
+   string status = 5; /// State change status
+ }
+
+service balanceService {
+   /// Used for crediting or debiting funds from the user's account
+  rpc Operation(OperationRequest) returns (OperationResponse);
+  /// Used to transfer funds between users
+  rpc Transfer(TransferRequest) returns (TransferResponse);
+  /// Used to check your balance
+  rpc GetBalance(GetBalanceRequest) returns (GetBalanceResponse);
+  /// Used to view the history of transactions
+  rpc Transaction(TransactionRequest) returns (TransactionResponse);
+}

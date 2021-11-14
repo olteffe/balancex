@@ -5,6 +5,8 @@
 *.iml
 out
 gen
+task.md
+notes.txt
 
 ### Go template
 # Binaries for programs and plugins

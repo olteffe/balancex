@@ -1,0 +1,54 @@
+@startuml
+'https://plantuml.com/component-diagram
+
+
+package "API Gateway" {
+  HTTPS - [Nginx]
+}
+
+node "Other microservices" {
+  prot1 - [Stuff]
+  [Nginx] --> prot1
+  prot2 - [Billing]
+  [Nginx] --> prot2
+}
+
+node "Balance service" {
+  gRPC - [Balance]
+  gRPC --> [Exchange service]
+}
+
+node "RabbitMQ" {
+    [queue] --> gRPC
+    [Billing] --> [queue]
+    [Stuff] --> [queue]
+}
+
+database "Postgresql" {
+  folder "Balance db" {
+    [Balance table]
+  }
+}
+
+database "Redis" {
+  folder "Exchange db" {
+    [Exchange table]
+  }
+}
+
+cloud {
+  [External API(exchange rate)]
+}
+
+node "Exchange service" {
+    [Exchange service] --> [Exchange table]
+    https - [Exchange service]
+    [Exchange service] --> [In-memory cash]
+}
+
+
+[Balance] --> [Balance table]
+[Balance] --> [Exchange table]
+https --> [External API(exchange rate)]
+
+@enduml
