@@ -10,7 +10,6 @@ import (
 // Config App config struct
 type Config struct {
 	Server   ServerConfig
-	RabbitMQ RabbitMQ
 	Postgres PostgresConfig
 	Redis    RedisConfig
 	Session  Session
@@ -37,19 +36,6 @@ type ServerConfig struct {
 	Timeout           time.Duration
 	MaxConnectionAge  time.Duration
 	Time              time.Duration
-}
-
-// RabbitMQ config
-type RabbitMQ struct {
-	Host           string
-	Port           string
-	User           string
-	Password       string
-	Exchange       string
-	Queue          string
-	RoutingKey     string
-	ConsumerTag    string
-	WorkerPoolSize int
 }
 
 // Logger config

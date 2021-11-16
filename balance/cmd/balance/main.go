@@ -11,7 +11,6 @@ import (
 	"github.com/olteffe/balancex/balance/pkg/jaeger"
 	"github.com/olteffe/balancex/balance/pkg/logger"
 	"github.com/olteffe/balancex/balance/pkg/postgres"
-	"github.com/olteffe/balancex/balance/pkg/rabbitmq"
 	"github.com/olteffe/balancex/balance/pkg/redis"
 )
 
@@ -37,13 +36,6 @@ func main() {
 	)
 	appLogger.Infof("Success parsed config: %#v", cfg.Server.AppVersion)
 
-	// rabbitmq
-	amqpConn, err := rabbitmq.NewRabbitMQConn(cfg)
-	if err != nil {
-		appLogger.Fatal(err)
-	}
-	defer amqpConn.Close()
-
 	// jaeger
 	tracer, closer, err := jaeger.InitJaeger(cfg)
 	if err != nil {
@@ -67,6 +59,6 @@ func main() {
 	redisClient := redis.NewRedisClient(cfg)
 	appLogger.Info("Redis connected")
 
-	s := server.NewServer(cfg, appLogger, amqpConn, pgxPool, redisClient, tracer)
+	s := server.NewServer(appLogger, cfg, pgxPool, redisClient, tracer)
 	appLogger.Fatal(s.Run())
 }

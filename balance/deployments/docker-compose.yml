@@ -1,6 +1,23 @@
 version: "3.8"
 
 services:
+  web:
+    container_name: balance-app
+    build:
+      context: ../
+      dockerfile: build/balance/Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+    depends_on:
+      - postgesql
+    restart: always
+    volumes:
+      - ./:/app
+    networks:
+      - dev-network
+
   postgesql:
     image: postgres:14.0-alpine
     container_name: balance-postges
@@ -20,7 +37,7 @@ services:
     container_name: prometheus_container
     image: prom/prometheus
     volumes:
-      - ./monitoring/prometheus-local.yml:/etc/prometheus/prometheus.yml:Z
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:Z
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'

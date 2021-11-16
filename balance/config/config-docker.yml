@@ -16,18 +16,6 @@ server:
   MaxConnectionAge: 5
   Time: 120
 
-rabbitmq:
-  Host: rabbitmq
-  Port: 5672
-  User: guest
-  Password: guest
-  Exchange: emails-exchange
-  Queue: emails-queue
-  RoutingKey: emails-routing-key
-  ConsumerTag: emails-consumer
-  WorkerPoolSize: 24
-
-
 logger:
   Development: true
   DisableCaller: false
@@ -40,7 +28,7 @@ postgres:
   PostgresqlPort: 5432
   PostgresqlUser: postgres
   PostgresqlPassword: postgres
-  PostgresqlDbname: mails_db
+  PostgresqlDbname: balance_db
   PostgresqlSslmode: false
   PgDriver: pgx
 
@@ -68,9 +56,9 @@ session:
 
 metrics:
   Url: 0.0.0.0:7070
-  ServiceName: mail_microservice
+  ServiceName: balance_microservice
 
 jaeger:
   Host: localhost:6831
-  ServiceName: mail_service
+  ServiceName: balance_service
   LogSpans: false

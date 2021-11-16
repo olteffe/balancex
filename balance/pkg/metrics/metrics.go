@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -46,7 +47,7 @@ func CreateMetrics(address string, name string) (Metrics, error) {
 	if err := prometheus.Register(metr.Times); err != nil {
 		return nil, err
 	}
-	if err := prometheus.Register(prometheus.NewBuildInfoCollector()); err != nil {
+	if err := prometheus.Register(collectors.NewBuildInfoCollector()); err != nil {
 		return nil, err
 	}
 	go func() {
