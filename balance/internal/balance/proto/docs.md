@@ -5,15 +5,13 @@
 
 - [balance.proto](#balance.proto)
     - [Balance](#balanceService.Balance)
-    - [GetBalanceRequest](#balanceService.GetBalanceRequest)
-    - [GetBalanceResponse](#balanceService.GetBalanceResponse)
-    - [OperationRequest](#balanceService.OperationRequest)
-    - [OperationResponse](#balanceService.OperationResponse)
+    - [BalanceRequest](#balanceService.BalanceRequest)
+    - [BalanceResponse](#balanceService.BalanceResponse)
+    - [OperationsRequest](#balanceService.OperationsRequest)
+    - [OperationsResponse](#balanceService.OperationsResponse)
     - [Transaction](#balanceService.Transaction)
     - [TransactionRequest](#balanceService.TransactionRequest)
     - [TransactionResponse](#balanceService.TransactionResponse)
-    - [TransferRequest](#balanceService.TransferRequest)
-    - [TransferResponse](#balanceService.TransferResponse)
   
     - [balanceService](#balanceService.balanceService)
   
@@ -36,79 +34,79 @@ Represents the user balance
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| request_id | [string](#string) |  | Unique request operation ID(UUID v4). |
 | user_id | [string](#string) |  | Unique user ID(UUID v4). |
 | currency | [string](#string) |  | Currency type. Three capital letters are used. Ex. RUB, USD etc. |
-| amount | [int64](#int64) |  | Change user balance. A negative number means a decrease in the user&#39;s balance. |
-| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time of processing. Format will be determined later. |
+| amount | [uint64](#uint64) |  | Change user balance. A negative number means a decrease in the user&#39;s balance. |
+| updated_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time of processing. |
 
 
 
 
 
 
-<a name="balanceService.GetBalanceRequest"></a>
+<a name="balanceService.BalanceRequest"></a>
 
-### GetBalanceRequest
-Represents user balance request
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| request_id | [string](#string) |  | Unique request operation ID(UUID v4). |
-| user_id | [string](#string) |  | Unique user ID(UUID v4). |
-
-
-
-
-
-
-<a name="balanceService.GetBalanceResponse"></a>
-
-### GetBalanceResponse
-Represents user balance response
+### BalanceRequest
+Represents user balance request.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| request_id | [string](#string) |  | Unique request operation ID(UUID v4). |
-| balance | [Balance](#balanceService.Balance) |  | The users balance. |
-| status | [string](#string) |  | State change status. |
-
-
-
-
-
-
-<a name="balanceService.OperationRequest"></a>
-
-### OperationRequest
-Represents request for accrual or reduction of money
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| request_id | [string](#string) |  | Unique request operation ID(UUID v4). |
 | user_id | [string](#string) |  | Unique user ID(UUID v4). |
 | currency | [string](#string) |  | Currency type. Three capital letters are used. Ex. RUB, USD etc. |
-| amount | [int64](#int64) |  | Change user balance. A negative number means a decrease in the user&#39;s balance. |
-| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time of processing. Format will be determined later. |
 
 
 
 
 
 
-<a name="balanceService.OperationResponse"></a>
+<a name="balanceService.BalanceResponse"></a>
 
-### OperationResponse
-Represents operation response
+### BalanceResponse
+Represents user balance response.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| request_id | [string](#string) |  | Unique request operation ID(UUID v4). |
-| status | [string](#string) |  | State change status |
+| balance | [Balance](#balanceService.Balance) |  | User balance response. |
+
+
+
+
+
+
+<a name="balanceService.OperationsRequest"></a>
+
+### OperationsRequest
+Represents request for accrual or reduction of users balance.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| user_id | [string](#string) |  | Unique user ID(UUID v4). |
+| currency | [string](#string) |  | Currency type. Three capital letters are used. Ex. RUB, USD etc. |
+| page | [sint64](#sint64) |  | Page number. |
+| size | [sint64](#sint64) |  | Page size. |
+
+
+
+
+
+
+<a name="balanceService.OperationsResponse"></a>
+
+### OperationsResponse
+Represents sorted user transactions
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| total_count | [sint64](#sint64) |  | Total count. |
+| total_pages | [sint64](#sint64) |  | Total pages. |
+| page | [sint64](#sint64) |  | Page number. |
+| size | [sint64](#sint64) |  | Page size. |
+| has_more | [bool](#bool) |  | End of message flag. |
+| transactions | [Transaction](#balanceService.Transaction) | repeated | List of transactions. |
 
 
 
@@ -123,11 +121,14 @@ Represents the transaction
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| request_id | [string](#string) |  | Unique request operation ID(UUID v4). |
-| from | [string](#string) |  | Source of account change. |
+| transaction_id | [string](#string) |  | Unique request operation ID(UUID v4). |
+| source | [string](#string) |  | Source of account change. |
 | description | [string](#string) |  | Transaction description. |
-| amount | [int64](#int64) |  | Change user balance. A negative number means a decrease in the user&#39;s balance. |
-| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time of processing. Format will be determined later. |
+| sender_id | [string](#string) |  | Unique sender ID(UUID v4). If sender is other microservice, then use static personal mc ID. |
+| recipient_id | [string](#string) |  | Unique receiver user ID(UUID v4). |
+| currency | [string](#string) |  | Currency type. Three capital letters are used. Ex. RUB, USD etc. |
+| amount | [sint64](#sint64) |  | Change user balance. A negative number means a decrease in the user&#39;s balance. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time of processing. |
 
 
 
@@ -137,16 +138,12 @@ Represents the transaction
 <a name="balanceService.TransactionRequest"></a>
 
 ### TransactionRequest
-Its a request for a list of transactions with pagination and sorting
+Represents Transaction Request.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| request_id | [string](#string) |  | Unique request operation ID(UUID v4). |
-| user_id | [string](#string) |  | Unique user ID(UUID v4). |
-| currency | [string](#string) |  | Currency type. Three capital letters are used. Ex. RUB, USD etc. |
-| page | [uint64](#uint64) |  | Page number. |
-| size | [uint64](#uint64) |  | Page size. |
+| transaction | [Transaction](#balanceService.Transaction) |  | User balance change request. |
 
 
 
@@ -156,52 +153,12 @@ Its a request for a list of transactions with pagination and sorting
 <a name="balanceService.TransactionResponse"></a>
 
 ### TransactionResponse
-Represents sorted user transactions
+Represents Transaction Response.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| request_id | [string](#string) |  | Unique request operation ID(UUID v4). |
-| user_id | [string](#string) |  | Unique user ID(UUID v4). |
-| currency | [string](#string) |  | Currency type. Three capital letters are used. Ex. RUB, USD etc. |
-| transaction | [Transaction](#balanceService.Transaction) | repeated | List of transactions. |
-| status | [string](#string) |  | State change status |
-
-
-
-
-
-
-<a name="balanceService.TransferRequest"></a>
-
-### TransferRequest
-Represents transfer request from one user to another
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| request_id | [string](#string) |  | Unique request operation ID(UUID v4). |
-| sender_id | [string](#string) |  | Unique sender ID(UUID v4). |
-| recipient_id | [string](#string) |  | Unique receiver ID(UUID v4). |
-| currency | [string](#string) |  | Currency type. Three capital letters are used. Ex. RUB, USD etc. |
-| amount | [uint64](#uint64) |  | Change user balance. A negative number means a decrease in the user&#39;s balance. |
-| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time of processing. Format will be determined later. |
-
-
-
-
-
-
-<a name="balanceService.TransferResponse"></a>
-
-### TransferResponse
-Represents transfer response
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| request_id | [string](#string) |  | Unique request operation ID(UUID v4). |
-| status | [string](#string) |  | State change status |
+| transaction_id | [string](#string) |  | User balance change response. |
 
 
 
@@ -221,11 +178,7 @@ Represents transfer response
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| Operation | [OperationRequest](#balanceService.OperationRequest) | [OperationResponse](#balanceService.OperationResponse) | Used for crediting or debiting funds from the user&#39;s account |
-| Transfer | [TransferRequest](#balanceService.TransferRequest) | [TransferResponse](#balanceService.TransferResponse) | Used to transfer funds between users |
-| GetBalance | [GetBalanceRequest](#balanceService.GetBalanceRequest) | [GetBalanceResponse](#balanceService.GetBalanceResponse) | Used to check your balance |
-| Transaction | [TransactionRequest](#balanceService.TransactionRequest) | [TransactionResponse](#balanceService.TransactionResponse) | Used to view the history of transactions |
-
- 
-
+| CreateTransaction | [TransactionRequest](#balanceService.TransactionRequest) | [TransactionResponse](#balanceService.TransactionResponse) | Used for crediting or debiting funds from the user&#39;s account. |
+| GetBalance | [BalanceRequest](#balanceService.BalanceRequest) | [BalanceResponse](#balanceService.BalanceResponse) | Used to check your balance. |
+| GetOperations | [OperationsRequest](#balanceService.OperationsRequest) | [OperationsResponse](#balanceService.OperationsResponse) stream | Used to view the history of transactions |
 

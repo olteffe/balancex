@@ -6,8 +6,6 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/pkg/errors"
-
 	"github.com/olteffe/balancex/balance/config"
 )
 
@@ -46,7 +44,7 @@ func NewPgxConn(cfg *config.Config) (*pgxpool.Pool, error) {
 
 	connPool, err := pgxpool.ConnectConfig(ctx, poolCfg)
 	if err != nil {
-		return nil, errors.Wrap(err, "pgx.ConnectConfig")
+		return nil, fmt.Errorf("pgx.ConnectConfig: %w", err)
 	}
 
 	return connPool, nil

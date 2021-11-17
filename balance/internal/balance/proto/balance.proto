@@ -1,10 +1,10 @@
- // protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/balance.proto
+// protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/balance.proto
 
- /**
+/**
 * Balance microservice.
 *
 * Microservice for working with the user balance.
-* It handles and stores financial data.
+* It handles and stores billing data.
 */
 
 syntax = "proto3";
@@ -12,115 +12,88 @@ syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 
 package balanceService;
-option go_package = ".;balanceService";
+option go_package = ".;proto";
 
 /**
  * Represents the user balance
  */
 message Balance {
-  string request_id = 1; /// Unique request operation ID(UUID v4).
-  string user_id = 2; /// Unique user ID(UUID v4).
-  string currency = 3; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
-  int64 amount = 4; /// Change user balance. A negative number means a decrease in the user's balance.
-  google.protobuf.Timestamp created_at = 5; /// Time of processing. Format will be determined later.
+  string user_id = 1; /// Unique user ID(UUID v4).
+  string currency = 2; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
+  uint64 amount = 3; /// Change user balance. A negative number means a decrease in the user's balance.
+  google.protobuf.Timestamp updated_at = 4; /// Time of processing.
 }
 
 /**
- * Represents the transaction
- */
+* Represents the transaction
+*/
 message Transaction {
-  string request_id = 1; /// Unique request operation ID(UUID v4).
-  string from = 2; /// Source of account change.
+  string transaction_id = 1; /// Unique request operation ID(UUID v4).
+  string source = 2; /// Source of account change.
   string description = 3; /// Transaction description.
-  int64 amount = 4; /// Change user balance. A negative number means a decrease in the user's balance.
-  google.protobuf.Timestamp created_at = 5; /// Time of processing. Format will be determined later.
+  string sender_id = 4; /// Unique sender ID(UUID v4). If sender is other microservice, then use static personal mc ID.
+  string recipient_id = 5; /// Unique receiver user ID(UUID v4).
+  string currency = 6; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
+  sint64 amount = 7; /// Change user balance. A negative number means a decrease in the user's balance.
+  google.protobuf.Timestamp created_at = 8; /// Time of processing.
 }
 
 /**
- * Represents request for accrual or reduction of money
+ * Represents user balance request.
  */
-message OperationRequest {
-  string request_id = 1; /// Unique request operation ID(UUID v4).
-  string user_id = 2;  /// Unique user ID(UUID v4).
-  string currency = 3; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
-  int64 amount = 4; /// Change user balance. A negative number means a decrease in the user's balance.
-  google.protobuf.Timestamp created_at = 5; /// Time of processing. Format will be determined later.
+message BalanceRequest {
+  string user_id = 1; /// Unique user ID(UUID v4).
+  string currency = 2; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
 }
 
 /**
- * Represents operation response
+ * Represents user balance response.
  */
-message OperationResponse {
-  string request_id = 1; /// Unique request operation ID(UUID v4).
-  string status = 2; /// State change status
+message BalanceResponse {
+  Balance balance = 1; /// User balance response.
 }
 
 /**
- * Represents transfer request from one user to another
- */
-message TransferRequest {
-  string request_id = 1; /// Unique request operation ID(UUID v4).
-  string sender_id = 2; /// Unique sender ID(UUID v4).
-  string recipient_id = 3; /// Unique receiver ID(UUID v4).
-  string currency = 4; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
-  uint64 amount = 5; /// Change user balance. A negative number means a decrease in the user's balance.
-  google.protobuf.Timestamp created_at = 6; /// Time of processing. Format will be determined later.
-}
-
-/**
- * Represents transfer response
- */
-message TransferResponse {
-  string request_id = 1; /// Unique request operation ID(UUID v4).
-  string status = 2; /// State change status
-}
-
-/**
- * Represents user balance request
- */
-message GetBalanceRequest {
-  string request_id = 1; /// Unique request operation ID(UUID v4).
-  string user_id = 2; /// Unique user ID(UUID v4).
-}
-
-/**
- * Represents user balance response
- */
-message GetBalanceResponse {
-  string request_id = 1; /// Unique request operation ID(UUID v4).
-  Balance balance = 2; /// The users balance.
-  string status = 3; /// State change status.
-}
-
-/**
- * Its a request for a list of transactions with pagination and sorting
+ * Represents Transaction Request.
  */
 message TransactionRequest {
-  string request_id = 1; /// Unique request operation ID(UUID v4).
-  string user_id = 2;  /// Unique user ID(UUID v4).
-  string currency = 3; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
-  uint64 page = 4; /// Page number.
-  uint64 size = 5; /// Page size.
+  Transaction transaction = 1; /// User balance change request.
+}
+
+/**
+ * Represents Transaction Response.
+ */
+message TransactionResponse {
+  string transaction_id = 1; /// User balance change response.
+}
+
+/**
+ * Represents request for accrual or reduction of users balance.
+ */
+message OperationsRequest {
+  string user_id = 1; /// Unique user ID(UUID v4).
+  string currency = 2; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
+  sint64 page = 3; /// Page number.
+  sint64 size = 4; /// Page size.
 }
 
 /**
  * Represents sorted user transactions
  */
- message TransactionResponse {
-   string request_id = 1; /// Unique request operation ID(UUID v4).
-   string user_id = 2;  /// Unique user ID(UUID v4).
-   string currency = 3; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
-   repeated Transaction transaction = 4; /// List of transactions.
-   string status = 5; /// State change status
- }
+message OperationsResponse {
+  sint64 total_count = 1; /// Total count.
+  sint64 total_pages = 2; /// Total pages.
+  sint64 page = 3; /// Page number.
+  sint64 size = 4; /// Page size.
+  bool has_more = 5; /// End of message flag.
+  repeated Transaction transactions = 6; /// List of transactions.
+}
 
 service balanceService {
-   /// Used for crediting or debiting funds from the user's account
-  rpc Operation(OperationRequest) returns (OperationResponse);
-  /// Used to transfer funds between users
-  rpc Transfer(TransferRequest) returns (TransferResponse);
-  /// Used to check your balance
-  rpc GetBalance(GetBalanceRequest) returns (GetBalanceResponse);
+  /// Used for crediting or debiting funds from the user's account.
+  rpc CreateTransaction(TransactionRequest) returns (TransactionResponse);
+  /// Used to check your balance.
+  rpc GetBalance(BalanceRequest) returns (BalanceResponse);
   /// Used to view the history of transactions
-  rpc Transaction(TransactionRequest) returns (TransactionResponse);
+  rpc GetOperations(OperationsRequest) returns (stream OperationsResponse);
 }
