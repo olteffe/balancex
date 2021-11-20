@@ -12,7 +12,7 @@ syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 
 package balanceService;
-option go_package = ".;proto";
+option go_package = ".;protobalance";
 
 /**
  * Represents the user balance
@@ -25,23 +25,23 @@ message Balance {
 }
 
 /**
-* Represents the transaction
-*/
-message Transaction {
-  string transaction_id = 1; /// Unique request operation ID(UUID v4).
-  string source = 2; /// Source of account change.
-  string description = 3; /// Transaction description.
-  string sender_id = 4; /// Unique sender ID(UUID v4). If sender is other microservice, then use static personal mc ID.
-  string recipient_id = 5; /// Unique receiver user ID(UUID v4).
-  string currency = 6; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
-  sint64 amount = 7; /// Change user balance. A negative number means a decrease in the user's balance.
-  google.protobuf.Timestamp created_at = 8; /// Time of processing.
+ * Represents create user balance request.
+ */
+message CreateBalanceRequest {
+  Balance balance = 1; ///
+}
+
+/**
+ * Represents create user balance response.
+ */
+message CreateBalanceResponse {
+  string user_id = 1; /// Unique user ID(UUID v4).
 }
 
 /**
  * Represents user balance request.
  */
-message BalanceRequest {
+message GetBalanceRequest {
   string user_id = 1; /// Unique user ID(UUID v4).
   string currency = 2; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
 }
@@ -49,51 +49,13 @@ message BalanceRequest {
 /**
  * Represents user balance response.
  */
-message BalanceResponse {
+message GetBalanceResponse {
   Balance balance = 1; /// User balance response.
 }
 
-/**
- * Represents Transaction Request.
- */
-message TransactionRequest {
-  Transaction transaction = 1; /// User balance change request.
-}
-
-/**
- * Represents Transaction Response.
- */
-message TransactionResponse {
-  string transaction_id = 1; /// User balance change response.
-}
-
-/**
- * Represents request for accrual or reduction of users balance.
- */
-message OperationsRequest {
-  string user_id = 1; /// Unique user ID(UUID v4).
-  string currency = 2; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
-  sint64 page = 3; /// Page number.
-  sint64 size = 4; /// Page size.
-}
-
-/**
- * Represents sorted user transactions
- */
-message OperationsResponse {
-  sint64 total_count = 1; /// Total count.
-  sint64 total_pages = 2; /// Total pages.
-  sint64 page = 3; /// Page number.
-  sint64 size = 4; /// Page size.
-  bool has_more = 5; /// End of message flag.
-  repeated Transaction transactions = 6; /// List of transactions.
-}
-
 service balanceService {
-  /// Used for crediting or debiting funds from the user's account.
-  rpc CreateTransaction(TransactionRequest) returns (TransactionResponse);
+  /// Create new users balance.
+  rpc CreateBalance(CreateBalanceRequest) returns (CreateBalanceResponse);
   /// Used to check your balance.
-  rpc GetBalance(BalanceRequest) returns (BalanceResponse);
-  /// Used to view the history of transactions
-  rpc GetOperations(OperationsRequest) returns (stream OperationsResponse);
+  rpc GetBalance(GetBalanceRequest) returns (GetBalanceResponse);
 }

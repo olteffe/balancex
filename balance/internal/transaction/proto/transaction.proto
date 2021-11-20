@@ -1,0 +1,72 @@
+// protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/transaction.proto
+
+/**
+* Balance microservice.
+*
+* Microservice for working with the user balance.
+* It handles and stores billing data.
+*/
+
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package transactionService;
+option go_package = ".;prototransaction";
+
+/**
+* Represents the transaction
+*/
+message Transaction {
+  string transaction_id = 1; /// Unique request operation ID(UUID v4).
+  string source = 2; /// Source of account change.
+  string description = 3; /// Transaction description.
+  string sender_id = 4; /// Unique sender ID(UUID v4). If sender is other microservice, then use static personal mc ID.
+  string recipient_id = 5; /// Unique receiver user ID(UUID v4).
+  string currency = 6; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
+  sint64 amount = 7; /// Change user balance. A negative number means a decrease in the user's balance.
+  google.protobuf.Timestamp created_at = 8; /// Time of processing.
+}
+
+/**
+ * Represents Transaction Request.
+ */
+message TransactionRequest {
+  Transaction transaction = 1; /// User balance change request.
+}
+
+/**
+ * Represents Transaction Response.
+ */
+message TransactionResponse {
+  string transaction_id = 1; /// User balance change response.
+}
+
+/**
+ * Represents request for accrual or reduction of users balance.
+ */
+message TransactionsRequest {
+  string user_id = 1; /// Unique user ID(UUID v4).
+  string currency = 2; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
+  sint64 page = 3; /// Page number.
+  sint64 size = 4; /// Page size.
+}
+
+/**
+ * Represents sorted user transactions
+ */
+message TransactionsResponse {
+  sint64 total_count = 1; /// Total count.
+  sint64 total_pages = 2; /// Total pages.
+  sint64 page = 3; /// Page number.
+  sint64 size = 4; /// Page size.
+  bool has_more = 5; /// End of message flag.
+  repeated Transaction transactions = 6; /// List of transactions.
+}
+
+service balanceService {
+  /// Used for crediting or debiting funds from the user's account.
+  rpc CreateTransaction(TransactionRequest) returns (TransactionResponse);
+  /// Used to view the history of transactions
+  rpc GetTransactions(TransactionsRequest) returns (stream TransactionsResponse);
+}
