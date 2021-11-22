@@ -17,6 +17,11 @@ type PaginationQuery struct {
 	OrderBy string `json:"orderBy,omitempty"`
 }
 
+// NewPaginationQuery Pagination query constructor
+func NewPaginationQuery(size uint64, page uint64) *PaginationQuery {
+	return &PaginationQuery{Size: size, Page: page}
+}
+
 // SetStringSize Set page size
 func (q *PaginationQuery) SetStringSize(sizeQuery string) error {
 	if sizeQuery == "" {

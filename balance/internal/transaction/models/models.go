@@ -18,6 +18,13 @@ type Transaction struct {
 	UpdatedAt     time.Time `db:"updated_at" validate:"omitempty"`
 }
 
+type TransactionsRequest struct {
+	UserID   uuid.UUID `db:"user_id" validate:"required,uuid"`
+	Currency string    `db:"currency" validate:"required,len=3,uppercase"`
+	Page     int64     `db:"page" validate:"omitempty,gt=0"`
+	Size     int64     `db:"size" validate:"omitempty,gt=0"`
+}
+
 type TransactionList struct {
 	TotalCount   int64          `db:"total_count" validate:"omitempty,gt=0"`
 	TotalPages   int64          `db:"total_page" validate:"omitempty,gt=0"`
