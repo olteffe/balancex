@@ -69,6 +69,7 @@ func (b *balanceService) createBalanceReqToBalanceModel(r *protobalance.CreateBa
 	return candidate, nil
 }
 
+// GetBalance get user balance
 func (b *balanceService) GetBalance(ctx context.Context, r *protobalance.GetBalanceRequest) (*protobalance.GetBalanceResponse, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "balance.Get")
 	defer span.Finish()
