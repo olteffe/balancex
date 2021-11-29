@@ -4,8 +4,8 @@
 APP_NAME = balance
 APP_PORT = 9000
 BUILD_DIR = build
-MIGRATIONS_FOLDER = internal/repository/migrations
-DATABASE_URL = postgres://postgres:password@localhost:5432/auth_db?sslmode=disable
+MIGRATIONS_FOLDER = ./migrations
+DATABASE_URL = postgres://postgres:password@localhost:5432/balance_db?sslmode=disable
 FILES := $(shell docker ps -aq)
 
 # ==============================================================================

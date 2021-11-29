@@ -15,7 +15,6 @@ type Transaction struct {
 	Currency      string    `db:"currency" validate:"required,len=3,uppercase"`
 	Amount        int64     `db:"amount" validate:"required,numeric"`
 	CreatedAt     time.Time `db:"created_at" validate:"omitempty"`
-	UpdatedAt     time.Time `db:"updated_at" validate:"omitempty"`
 }
 
 type TransactionsRequest struct {
