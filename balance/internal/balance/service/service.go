@@ -25,18 +25,18 @@ func NewBalanceService(balanceRepo balance.PGRepository, redisRepo balance.Redis
 }
 
 // CreateBalance Create user balance
-func (b *balanceService) CreateBalance(ctx context.Context, balance *models.Balance) (*models.Balance, error) {
+func (b *balanceService) CreateBalance(ctx context.Context, balance *models.Balance) (string, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "balanceService.CreateBalance")
 	defer span.Finish()
 
 	existsUser, err := b.balanceRepo.FindUserID(ctx, balance.UserID)
 	if existsUser != nil || err == nil {
-		return nil, grpc_errors.ErrUserExists
+		return "", grpc_errors.ErrUserExists
 	}
 
 	convert, err := b.redisRepo.ConvertBalance(ctx, balance)
 	if err != nil {
-		return nil, grpc_errors.ErrConvertCurrency
+		return "", grpc_errors.ErrConvertCurrency
 	}
 	return b.balanceRepo.CreateBalance(ctx, convert)
 }

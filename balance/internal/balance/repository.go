@@ -8,7 +8,7 @@ import (
 
 // PGRepository interface
 type PGRepository interface {
-	CreateBalance(ctx context.Context, balance *models.Balance) (*models.Balance, error)
+	CreateBalance(ctx context.Context, balance *models.Balance) (string, error)
 	GetBalance(ctx context.Context, balance *models.Balance) (*models.Balance, error)
 	FindUserID(ctx context.Context, userID uuid.UUID) (*models.Balance, error)
 }
