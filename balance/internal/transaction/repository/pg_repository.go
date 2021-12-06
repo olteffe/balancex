@@ -46,15 +46,44 @@ func (r *TransactionRepository) CreateTransaction(ctx context.Context, transacti
 	span, ctx := opentracing.StartSpanFromContext(ctx, "TransactionRepository.CreateTransaction")
 	defer span.Finish()
 
+	tx, err := r.db.Begin(ctx)
+	if err != nil {
+		return "", fmt.Errorf("CreateTransaction.Begin: %w", err)
+	}
+	defer tx.Rollback(ctx)
+	decrease, err := tx.Exec(ctx, createTransactionDecreaseQuery, transaction.Amount, transaction.SenderID)
+	if err != nil {
+		return "", fmt.Errorf("CreateTransaction.Decrease: %w", err)
+	}
+	if decrease.RowsAffected() == 0 {
+		return "", fmt.Errorf("CreateTransaction.DecreaseRowsAffected: %w", err)
+	}
+
+	increase, err := tx.Exec(ctx, createTransactionIncreaseQuery, transaction.Amount, transaction.RecipientID)
+	if err != nil {
+		return "", fmt.Errorf("CreateTransaction.Increase: %w", err)
+	}
+	if increase.RowsAffected() == 0 {
+		return "", fmt.Errorf("CreateTransaction.IncreaseRowsAffected: %w", err)
+	}
+
 	var transactionID string
-	if err := r.db.QueryRow(
+	if err := tx.QueryRow(
 		ctx,
-		createTransactionQuery,
+		createTransactionHistoryQuery,
+		transaction.TransactionID,
+		transaction.Source,
+		transaction.Description,
 		transaction.SenderID,
 		transaction.RecipientID,
 		transaction.Amount,
+		transaction.CreatedAt,
 	).Scan(&transactionID); err != nil {
-		return "", err
+		return "", fmt.Errorf("CreateTransaction.History: %w", err)
+	}
+	err = tx.Commit(ctx)
+	if err != nil {
+		return "", fmt.Errorf("CreateTransaction.Commit: %w", err)
 	}
 	return transactionID, nil
 }
