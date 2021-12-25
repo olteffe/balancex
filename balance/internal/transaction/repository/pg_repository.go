@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"github.com/olteffe/balancex/balance/pkg/utils"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/opentracing/opentracing-go"
@@ -86,4 +87,61 @@ func (r *TransactionRepository) CreateTransaction(ctx context.Context, transacti
 		return "", fmt.Errorf("CreateTransaction.Commit: %w", err)
 	}
 	return transactionID, nil
+}
+
+// GetTransactions Get Transactions
+func (r *TransactionRepository) GetTransactions(ctx context.Context, transaction *utils.TransactionsRequest) (list *models.TransactionList, err error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "TransactionRepository.GetTransactions")
+	defer span.Finish()
+
+	var total uint32
+	if err := r.db.QueryRow(ctx, getTransactionsCountQuery).Scan(&total); err != nil {
+		return nil, fmt.Errorf("GetTransactions.Count: %w", err)
+	}
+	if total == 0 {
+		return &models.TransactionList{
+			TotalCount:   total,
+			TotalPages:   0,
+			Page:         0,
+			Size:         0,
+			HasMore:      false,
+			Transactions: make([]*models.Transaction, 0),
+		}, nil
+	}
+
+	rows, err := r.db.Query(ctx, getTransactionsQuery, transaction.UserID, transaction.GetOffset(), transaction.GetLimit())
+	if err != nil {
+		return nil, fmt.Errorf("GetTransactions.Rows: %w", err)
+	}
+	defer rows.Close()
+
+	transactions := make([]*models.Transaction, 0, transaction.GetLimit())
+	for rows.Next() {
+		var tran models.Transaction
+		if err := rows.Scan(
+			&tran.ID,
+			&tran.TransactionID,
+			&tran.Source,
+			&tran.Description,
+			&tran.SenderID,
+			&tran.RecipientID,
+			&tran.Currency,
+			&tran.Amount,
+			&tran.CreatedAt,
+		); err != nil {
+			return nil, fmt.Errorf("GetTransactions.RowsScan: %w", err)
+		}
+		transactions = append(transactions, &tran)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("GetTransactions.RowsErr: %w", err)
+	}
+	return &models.TransactionList{
+		TotalCount:   total,
+		TotalPages:   transaction.GetTotalPages(total),
+		Page:         transaction.GetPage(),
+		Size:         transaction.GetSize(),
+		HasMore:      transaction.GetHasMore(total),
+		Transactions: transactions,
+	}, nil
 }

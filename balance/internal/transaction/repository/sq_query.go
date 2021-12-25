@@ -7,4 +7,8 @@ const (
 	createTransactionHistoryQuery  = `INSERT INTO transactions
 	(transaction_id, source, description, sender_id, recipient_id, currency, amount, created_at)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING transaction_id`
+	getTransactionsCountQuery = `SELECT COUNT(*) as total FROM transactions`
+	getTransactionsQuery      = `
+	SELECT transaction_id, source, description, sender_id, recipient_id, currency, amount, created_at
+	FROM transactions WHERE sender_id = $1 OR recipient_id = $1 OFFSET $2 LIMIT $3`
 )

@@ -1,4 +1,5 @@
 // protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/transaction.proto
+// docker run --rm -v $(pwd):/out -v $(pwd):/protos pseudomuto/protoc-gen-doc --doc_opt=markdown,transaction_docs.md
 
 /**
 * Balance microservice.
@@ -48,18 +49,19 @@ message TransactionResponse {
 message TransactionsRequest {
   string user_id = 1; /// Unique user ID(UUID v4).
   string currency = 2; /// Currency type. Three capital letters are used. Ex. RUB, USD etc.
-  sint64 page = 3; /// Page number.
-  sint64 size = 4; /// Page size.
+  uint32 page = 3; /// Page number.
+  uint32 size = 4; /// Page size.
+  string orderBy = 5; /// Set order
 }
 
 /**
  * Represents sorted user transactions
  */
 message TransactionsResponse {
-  sint64 total_count = 1; /// Total count.
-  sint64 total_pages = 2; /// Total pages.
-  sint64 page = 3; /// Page number.
-  sint64 size = 4; /// Page size.
+  uint32 total_count = 1; /// Total count.
+  uint32 total_pages = 2; /// Total pages.
+  uint32 page = 3; /// Page number.
+  uint32 size = 4; /// Page size.
   bool has_more = 5; /// End of message flag.
   repeated Transaction transactions = 6; /// List of transactions.
 }

@@ -85,8 +85,9 @@ Represents request for accrual or reduction of users balance.
 | ----- | ---- | ----- | ----------- |
 | user_id | [string](#string) |  | Unique user ID(UUID v4). |
 | currency | [string](#string) |  | Currency type. Three capital letters are used. Ex. RUB, USD etc. |
-| page | [sint64](#sint64) |  | Page number. |
-| size | [sint64](#sint64) |  | Page size. |
+| page | [uint32](#uint32) |  | Page number. |
+| size | [uint32](#uint32) |  | Page size. |
+| orderBy | [string](#string) |  | Set order |
 
 
 
@@ -101,10 +102,10 @@ Represents sorted user transactions
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| total_count | [sint64](#sint64) |  | Total count. |
-| total_pages | [sint64](#sint64) |  | Total pages. |
-| page | [sint64](#sint64) |  | Page number. |
-| size | [sint64](#sint64) |  | Page size. |
+| total_count | [uint32](#uint32) |  | Total count. |
+| total_pages | [uint32](#uint32) |  | Total pages. |
+| page | [uint32](#uint32) |  | Page number. |
+| size | [uint32](#uint32) |  | Page size. |
 | has_more | [bool](#bool) |  | End of message flag. |
 | transactions | [Transaction](#transactionService.Transaction) | repeated | List of transactions. |
 

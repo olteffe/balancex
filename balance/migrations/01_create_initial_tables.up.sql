@@ -15,7 +15,7 @@ create table balance (
 
 create table transactions (
     id BIGSERIAL PRIMARY KEY,
-    transaction_id UUID NOT NULL,
+    transaction_id UUID NOT NULL UNIQUE,
     source VARCHAR(250),
     description VARCHAR(250),
     sender_id UUID REFERENCES balance (user_id) ON DELETE CASCADE NOT NULL,
@@ -26,6 +26,7 @@ create table transactions (
 );
 
 CREATE INDEX if not exists user_id_idx ON balance (user_id);
+CREATE INDEX if not exists transaction_id_idx ON transactions (transaction_id);
 
 CREATE OR REPLACE FUNCTION balance_updated() RETURNS TRIGGER AS
 $$

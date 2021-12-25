@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/opentracing/opentracing-go"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/olteffe/balancex/balance/internal/transaction/models"
 	"github.com/olteffe/balancex/balance/pkg/grpc_errors"
 	"github.com/olteffe/balancex/balance/pkg/logger"
+	"github.com/olteffe/balancex/balance/pkg/utils"
 )
 
 // transactionService transaction service
@@ -46,13 +48,13 @@ func (t *transactionService) CreateTransaction(ctx context.Context, transaction 
 }
 
 // GetTransactions get user transactions
-func (t *transactionService) GetTransactions(ctx context.Context, transaction *models.TransactionsRequest) (*models.TransactionList, error) {
+func (t *transactionService) GetTransactions(ctx context.Context, transaction *utils.TransactionsRequest) (*models.TransactionList, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "transactionService.GetTransactions")
 	defer span.Finish()
 
 	exist, err := t.tranRepo.FindUserID(ctx, transaction)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("GetTransactions.FindUserID: %w", err)
 	}
 	if exist != true {
 		return nil, grpc_errors.ErrUserExists

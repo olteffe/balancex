@@ -109,18 +109,13 @@ func (t *transactionService) GetTransactions(ctx context.Context, r *pt.Transact
 }
 
 // getTransactionsReqToModel mapping in model
-func (t *transactionService) getTransactionsReqToModel(r *pt.TransactionsRequest) (*models.TransactionsRequest, error) {
+func (t *transactionService) getTransactionsReqToModel(r *pt.TransactionsRequest) (*utils.TransactionsRequest, error) {
 	userID, err := uuid.Parse(r.GetUserId())
 	if err != nil {
 		t.logger.Errorf("transactionsIDParse: %v", err)
 		return nil, err
 	}
-	candidate := &models.TransactionsRequest{
-		UserID:   userID,
-		Currency: r.GetCurrency(),
-		Page:     r.GetPage(),
-		Size:     r.GetSize(),
-	}
+	candidate := utils.NewPaginationQuery(userID, r.GetCurrency(), r.GetSize(), r.GetPage(), r.OrderBy)
 	return candidate, nil
 }
 

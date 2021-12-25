@@ -4,99 +4,109 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+
+	"github.com/google/uuid"
 )
 
 const (
 	defaultSize = 10
 )
 
-// PaginationQuery Pagination query params
-type PaginationQuery struct {
-	Size    uint64 `json:"size,omitempty"`
-	Page    uint64 `json:"page,omitempty"`
-	OrderBy string `json:"orderBy,omitempty"`
+// TransactionsRequest Pagination query params
+type TransactionsRequest struct {
+	UserID   uuid.UUID `db:"user_id" validate:"required,uuid"`
+	Currency string    `db:"currency" validate:"required,len=3,uppercase"`
+	Size     uint32    `db:"size" validate:"omitempty,gt=0"`
+	Page     uint32    `db:"page" validate:"omitempty,gt=0"`
+	OrderBy  string    `validate:"omitempty,len=3"`
 }
 
 // NewPaginationQuery Pagination query constructor
-func NewPaginationQuery(size uint64, page uint64) *PaginationQuery {
-	return &PaginationQuery{Size: size, Page: page}
+func NewPaginationQuery(userID uuid.UUID, currency string, size uint32, page uint32, orderBy string) *TransactionsRequest {
+	return &TransactionsRequest{
+		UserID:   userID,
+		Currency: currency,
+		Size:     size,
+		Page:     page,
+		OrderBy:  orderBy,
+	}
 }
 
 // SetStringSize Set page size
-func (q *PaginationQuery) SetStringSize(sizeQuery string) error {
+func (t *TransactionsRequest) SetStringSize(sizeQuery string) error {
 	if sizeQuery == "" {
-		q.Size = defaultSize
+		t.Size = defaultSize
 		return nil
 	}
 	n, err := strconv.Atoi(sizeQuery)
 	if err != nil {
 		return err
 	}
-	q.Size = uint64(n)
+	t.Size = uint32(n)
 
 	return nil
 }
 
 // SetStringPage Set page number
-func (q *PaginationQuery) SetStringPage(pageQuery string) error {
+func (t *TransactionsRequest) SetStringPage(pageQuery string) error {
 	if pageQuery == "" {
-		q.Size = 0
+		t.Size = 0
 		return nil
 	}
 	n, err := strconv.Atoi(pageQuery)
 	if err != nil {
 		return err
 	}
-	q.Page = uint64(n)
+	t.Page = uint32(n)
 
 	return nil
 }
 
 // SetOrderBy Set order by
-func (q *PaginationQuery) SetOrderBy(orderByQuery string) {
-	q.OrderBy = orderByQuery
+func (t *TransactionsRequest) SetOrderBy(orderByQuery string) {
+	t.OrderBy = orderByQuery
 }
 
 // GetOffset Get offset
-func (q *PaginationQuery) GetOffset() uint64 {
-	if q.Page == 0 {
+func (t *TransactionsRequest) GetOffset() uint32 {
+	if t.Page == 0 {
 		return 0
 	}
-	return (q.Page - 1) * q.Size
+	return (t.Page - 1) * t.Size
 }
 
 // GetLimit Get limit
-func (q *PaginationQuery) GetLimit() uint64 {
-	return q.Size
+func (t *TransactionsRequest) GetLimit() uint32 {
+	return t.Size
 }
 
 // GetOrderBy Get OrderBy
-func (q *PaginationQuery) GetOrderBy() string {
-	return q.OrderBy
+func (t *TransactionsRequest) GetOrderBy() string {
+	return t.OrderBy
 }
 
 // GetPage Get page
-func (q *PaginationQuery) GetPage() uint64 {
-	return q.Page
+func (t *TransactionsRequest) GetPage() uint32 {
+	return t.Page
 }
 
 // GetSize Get size
-func (q *PaginationQuery) GetSize() uint64 {
-	return q.Size
+func (t *TransactionsRequest) GetSize() uint32 {
+	return t.Size
 }
 
 // GetQueryString Get query string
-func (q *PaginationQuery) GetQueryString() string {
-	return fmt.Sprintf("page=%v&size=%v&orderBy=%s", q.GetPage(), q.GetSize(), q.GetOrderBy())
+func (t *TransactionsRequest) GetQueryString() string {
+	return fmt.Sprintf("page=%v&size=%v&orderBy=%s", t.GetPage(), t.GetSize(), t.GetOrderBy())
 }
 
 // GetTotalPages Get total pages int
-func GetTotalPages(totalCount uint64, pageSize uint64) uint64 {
-	d := float64(totalCount) / float64(pageSize)
-	return uint64(math.Ceil(d))
+func (t *TransactionsRequest) GetTotalPages(totalCount uint32) uint32 {
+	d := float64(totalCount) / float64(t.GetSize())
+	return uint32(math.Ceil(d))
 }
 
 // GetHasMore Get has more
-func GetHasMore(currentPage uint64, totalCount uint64, pageSize uint64) bool {
-	return currentPage < totalCount/pageSize
+func (t *TransactionsRequest) GetHasMore(totalCount uint32) bool {
+	return t.GetPage() < totalCount/t.GetSize()
 }
