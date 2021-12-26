@@ -24,7 +24,7 @@ migrate-force:
 
 develop-run:
 	echo "Starting docker environment"
-	docker-compose -f deployments/docker-compose.dev.yml up --build
+	docker-compose -f deployments/docker-compose.yml up --build
 
 local-run:
 	echo "Starting local environment"

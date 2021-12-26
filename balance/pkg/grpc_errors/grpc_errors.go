@@ -2,7 +2,6 @@ package grpc_errors
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"net/http"
 	"strings"
@@ -20,7 +19,7 @@ var (
 // ParseGRPCErrStatusCode Parse error and get code
 func ParseGRPCErrStatusCode(err error) codes.Code {
 	switch {
-	case errors.Is(err, sql.ErrNoRows):
+	case errors.Is(err, ErrNotFound):
 		return codes.NotFound
 	case errors.Is(err, context.Canceled):
 		return codes.Canceled

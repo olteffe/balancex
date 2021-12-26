@@ -36,7 +36,7 @@ func (t *transactionService) CreateTransaction(ctx context.Context, transaction 
 	if err != nil {
 		return "", err
 	}
-	if exist != true {
+	if !exist {
 		return "", grpc_errors.ErrUserExists
 	}
 
@@ -56,7 +56,7 @@ func (t *transactionService) GetTransactions(ctx context.Context, transaction *u
 	if err != nil {
 		return nil, fmt.Errorf("GetTransactions.FindUserID: %w", err)
 	}
-	if exist != true {
+	if !exist {
 		return nil, grpc_errors.ErrUserExists
 	}
 

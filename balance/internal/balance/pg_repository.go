@@ -1,3 +1,4 @@
+//go:generate mockgen -source pg_repository.go -destination mock/pg_repository.go -package mock
 package balance
 
 import (
@@ -10,11 +11,5 @@ import (
 type PGRepository interface {
 	CreateBalance(ctx context.Context, balance *models.Balance) (string, error)
 	GetBalance(ctx context.Context, balance *models.Balance) (*models.Balance, error)
-	FindUserID(ctx context.Context, userID uuid.UUID) (*models.Balance, error)
-}
-
-// RedisRepository Redis balance repository interface
-type RedisRepository interface {
-	GetBalance(ctx context.Context, balance *models.Balance) (*models.Balance, error)
-	ConvertBalance(ctx context.Context, balance *models.Balance) (*models.Balance, error)
+	FindUserID(ctx context.Context, userID uuid.UUID) error
 }

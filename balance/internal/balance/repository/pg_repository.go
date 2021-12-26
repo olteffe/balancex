@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/opentracing/opentracing-go"
 
@@ -53,4 +55,19 @@ func (r *BalanceRepository) GetBalance(ctx context.Context, user *models.Balance
 		return nil, fmt.Errorf("GetBalance.QueryRowContext: %w", err)
 	}
 	return &gotBalance, nil
+}
+
+// FindUserID find userID
+func (r *BalanceRepository) FindUserID(ctx context.Context, userID uuid.UUID) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "BalanceRepository.FindUserID")
+	defer span.Finish()
+
+	var count int
+	if err := r.db.QueryRow(ctx, findUser, userID.String()).Scan(&count); err != nil {
+		if err == pgx.ErrNoRows {
+			return nil
+		}
+		return fmt.Errorf("FindUserID.QueryRowDB: %w", err)
+	}
+	return nil
 }

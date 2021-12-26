@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"log"
 	"os"
 
@@ -45,7 +46,12 @@ func main() {
 
 	// opentracing
 	opentracing.SetGlobalTracer(tracer)
-	defer closer.Close()
+	defer func(closer io.Closer) {
+		err := closer.Close()
+		if err != nil {
+			appLogger.Warn("Jaeger closer")
+		}
+	}(closer)
 	appLogger.Info("Opentracing connected")
 
 	// postgres

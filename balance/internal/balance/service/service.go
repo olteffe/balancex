@@ -29,8 +29,7 @@ func (b *balanceService) CreateBalance(ctx context.Context, balance *models.Bala
 	span, ctx := opentracing.StartSpanFromContext(ctx, "balanceService.CreateBalance")
 	defer span.Finish()
 
-	existsUser, err := b.balanceRepo.FindUserID(ctx, balance.UserID)
-	if existsUser != nil || err == nil {
+	if err := b.balanceRepo.FindUserID(ctx, balance.UserID); err != nil {
 		return "", grpc_errors.ErrUserExists
 	}
 
