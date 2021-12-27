@@ -1,3 +1,4 @@
+//go:generate mockgen -source pg_repository.go -destination mock/pg_repository.go -package mock
 package transaction
 
 import (
@@ -10,13 +11,7 @@ import (
 // PGRepository interface
 type PGRepository interface {
 	CreateTransaction(ctx context.Context, transaction *models.Transaction) (string, error)
-	GetTransactions(ctx context.Context, balance *models.Transaction) (*models.TransactionList, error)
+	GetTransactions(ctx context.Context, transaction *utils.TransactionsRequest) (*models.TransactionList, error)
 	FindUsersID(ctx context.Context, transaction *models.Transaction) (bool, error)
 	FindUserID(ctx context.Context, transaction *utils.TransactionsRequest) (bool, error)
-}
-
-// RedisRepository interface
-type RedisRepository interface {
-	ConvertTransaction(ctx context.Context, transaction *models.Transaction) (*models.Transaction, error)
-	ConvertTransactions(ctx context.Context, transaction *utils.TransactionsRequest) (*models.Transaction, error)
 }

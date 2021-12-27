@@ -14,6 +14,7 @@ var (
 	ErrNoCtxMetaData   = errors.New("no ctx metadata")
 	ErrConvertCurrency = errors.New("conversion error")
 	ErrUserExists      = errors.New("user already exists")
+	ErrDB              = errors.New("DB error")
 )
 
 // ParseGRPCErrStatusCode Parse error and get code
@@ -35,10 +36,8 @@ func ParseGRPCErrStatusCode(err error) codes.Code {
 		return codes.InvalidArgument
 	case strings.Contains(err.Error(), "redis"):
 		return codes.NotFound
-	case errors.Is(err, context.Canceled):
-		return codes.Canceled
-	case errors.Is(err, context.DeadlineExceeded):
-		return codes.DeadlineExceeded
+	case errors.Is(err, ErrDB):
+		return codes.Unavailable
 	}
 	return codes.Internal
 }

@@ -20,6 +20,10 @@ type transactionService struct {
 	logger    logger.Logger
 }
 
+const (
+	mainCurrency = "RUB"
+)
+
 // NewTransactionService Transaction service constructor
 func NewTransactionService(tranRepo transaction.PGRepository, redisRepo transaction.RedisRepository,
 	logger logger.Logger) *transactionService {
@@ -34,13 +38,13 @@ func (t *transactionService) CreateTransaction(ctx context.Context, transaction 
 	// find senderID & recipientID in repository
 	exist, err := t.tranRepo.FindUsersID(ctx, transaction)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("CreateTransaction.FindUsersID: %w", err)
 	}
 	if !exist {
-		return "", grpc_errors.ErrUserExists
+		return "", fmt.Errorf("CreateTransaction.FindUsersID: %w", grpc_errors.ErrUserExists)
 	}
 
-	convert, err := t.redisRepo.ConvertTransaction(ctx, transaction)
+	convert, err := t.convertRate(ctx, transaction)
 	if err != nil {
 		return "", grpc_errors.ErrConvertCurrency
 	}
@@ -57,12 +61,20 @@ func (t *transactionService) GetTransactions(ctx context.Context, transaction *u
 		return nil, fmt.Errorf("GetTransactions.FindUserID: %w", err)
 	}
 	if !exist {
-		return nil, grpc_errors.ErrUserExists
+		return nil, fmt.Errorf("GetTransactions.FindUsersID: %w", grpc_errors.ErrUserExists)
 	}
+	return t.tranRepo.GetTransactions(ctx, transaction)
+}
 
-	convert, err := t.redisRepo.ConvertTransactions(ctx, transaction)
-	if err != nil {
-		return nil, grpc_errors.ErrConvertCurrency
+// convertRate converts currency
+func (t *transactionService) convertRate(ctx context.Context, transaction *models.Transaction) (*models.Transaction, error) {
+	if transaction.Currency == mainCurrency {
+		return transaction, nil
 	}
-	return t.tranRepo.GetTransactions(ctx, convert)
+	rate, err := t.redisRepo.GetRate(ctx, transaction.Currency)
+	if err != nil {
+		return nil, fmt.Errorf("convertRate: %w", err)
+	}
+	transaction.Amount = int64(rate * float32(transaction.Amount)) // problems with law
+	return transaction, nil
 }
