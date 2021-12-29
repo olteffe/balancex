@@ -4,13 +4,13 @@
 ## Table of Contents
 
 - [transaction.proto](#transaction.proto)
-    - [Transaction](#transactionService.Transaction)
-    - [TransactionRequest](#transactionService.TransactionRequest)
-    - [TransactionResponse](#transactionService.TransactionResponse)
-    - [TransactionsRequest](#transactionService.TransactionsRequest)
-    - [TransactionsResponse](#transactionService.TransactionsResponse)
+    - [Transaction](#protoTransaction.Transaction)
+    - [TransactionRequest](#protoTransaction.TransactionRequest)
+    - [TransactionResponse](#protoTransaction.TransactionResponse)
+    - [TransactionsRequest](#protoTransaction.TransactionsRequest)
+    - [TransactionsResponse](#protoTransaction.TransactionsResponse)
   
-    - [balanceService](#transactionService.balanceService)
+    - [transactionService](#protoTransaction.transactionService)
   
 - [Scalar Value Types](#scalar-value-types)
 
@@ -23,7 +23,7 @@
 
 
 
-<a name="transactionService.Transaction"></a>
+<a name="protoTransaction.Transaction"></a>
 
 ### Transaction
 Represents the transaction
@@ -45,7 +45,7 @@ Represents the transaction
 
 
 
-<a name="transactionService.TransactionRequest"></a>
+<a name="protoTransaction.TransactionRequest"></a>
 
 ### TransactionRequest
 Represents Transaction Request.
@@ -53,14 +53,14 @@ Represents Transaction Request.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| transaction | [Transaction](#transactionService.Transaction) |  | User balance change request. |
+| transaction | [Transaction](#protoTransaction.Transaction) |  | User balance change request. |
 
 
 
 
 
 
-<a name="transactionService.TransactionResponse"></a>
+<a name="protoTransaction.TransactionResponse"></a>
 
 ### TransactionResponse
 Represents Transaction Response.
@@ -75,7 +75,7 @@ Represents Transaction Response.
 
 
 
-<a name="transactionService.TransactionsRequest"></a>
+<a name="protoTransaction.TransactionsRequest"></a>
 
 ### TransactionsRequest
 Represents request for accrual or reduction of users balance.
@@ -94,7 +94,7 @@ Represents request for accrual or reduction of users balance.
 
 
 
-<a name="transactionService.TransactionsResponse"></a>
+<a name="protoTransaction.TransactionsResponse"></a>
 
 ### TransactionsResponse
 Represents sorted user transactions
@@ -107,7 +107,7 @@ Represents sorted user transactions
 | page | [uint32](#uint32) |  | Page number. |
 | size | [uint32](#uint32) |  | Page size. |
 | has_more | [bool](#bool) |  | End of message flag. |
-| transactions | [Transaction](#transactionService.Transaction) | repeated | List of transactions. |
+| transactions | [Transaction](#protoTransaction.Transaction) | repeated | List of transactions. |
 
 
 
@@ -120,15 +120,15 @@ Represents sorted user transactions
  
 
 
-<a name="transactionService.balanceService"></a>
+<a name="protoTransaction.transactionService"></a>
 
-### balanceService
+### transactionService
 
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| CreateTransaction | [TransactionRequest](#transactionService.TransactionRequest) | [TransactionResponse](#transactionService.TransactionResponse) | Used for crediting or debiting funds from the user&#39;s account. |
-| GetTransactions | [TransactionsRequest](#transactionService.TransactionsRequest) | [TransactionsResponse](#transactionService.TransactionsResponse) stream | Used to view the history of transactions |
+| CreateTransaction | [TransactionRequest](#protoTransaction.TransactionRequest) | [TransactionResponse](#protoTransaction.TransactionResponse) | Used for crediting or debiting funds from the user&#39;s account. |
+| GetTransactions | [TransactionsRequest](#protoTransaction.TransactionsRequest) | [TransactionsResponse](#protoTransaction.TransactionsResponse) | Used to view the history of transactions |
 
  
 

@@ -11,4 +11,5 @@ const (
 	getTransactionsQuery      = `
 	SELECT transaction_id, source, description, sender_id, recipient_id, currency, amount, created_at
 	FROM transactions WHERE sender_id = $1 OR recipient_id = $1 OFFSET $2 LIMIT $3`
+	findUserIDQuery = `SELECT count(user_id) FROM balance WHERE user_id = $1`
 )

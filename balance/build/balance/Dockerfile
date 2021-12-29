@@ -13,7 +13,7 @@ RUN go build -ldflags="-s -w" -o balance ./cmd/balance/main.go
 
 # Step 3: Final
 FROM scratch
-COPY --from=builder ["/build/balance", "/build/configs/config-docker.yml", "/"]
+COPY --from=builder ["/build/balance", "/build/config/config-docker.yml", "/"]
 EXPOSE 9000/tcp
 USER 1001
 ENTRYPOINT ["/balance"]

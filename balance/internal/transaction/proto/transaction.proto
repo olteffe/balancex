@@ -1,4 +1,4 @@
-// protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/transaction.proto
+// protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative --go-grpc_opt=require_unimplemented_servers=false proto/transaction.proto
 // docker run --rm -v $(pwd):/out -v $(pwd):/protos pseudomuto/protoc-gen-doc --doc_opt=markdown,transaction_docs.md
 
 /**
@@ -12,8 +12,8 @@ syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
 
-package transactionService;
-option go_package = ".;prototransaction";
+package protoTransaction;
+option go_package = ".;protoTransaction";
 
 /**
 * Represents the transaction
@@ -66,9 +66,9 @@ message TransactionsResponse {
   repeated Transaction transactions = 6; /// List of transactions.
 }
 
-service balanceService {
+service transactionService {
   /// Used for crediting or debiting funds from the user's account.
   rpc CreateTransaction(TransactionRequest) returns (TransactionResponse);
   /// Used to view the history of transactions
-  rpc GetTransactions(TransactionsRequest) returns (stream TransactionsResponse);
+  rpc GetTransactions(TransactionsRequest) returns (TransactionsResponse);
 }

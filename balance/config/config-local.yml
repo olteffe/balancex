@@ -7,7 +7,7 @@ server:
   CookieName: jwt-token
   ReadTimeout: 5
   WriteTimeout: 5
-  SSL: true
+  SSL: false
   CtxDefaultTimeout: 12
   CSRF: true
   Debug: false
@@ -29,7 +29,7 @@ postgres:
   PostgresqlUser: postgres
   PostgresqlPassword: postgres
   PostgresqlDbname: balance_db
-  PostgresqlSslmode: false
+  PostgresqlSSLmode: false
   PgDriver: pgx
 
 redis:

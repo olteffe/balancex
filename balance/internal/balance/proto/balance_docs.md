@@ -4,13 +4,13 @@
 ## Table of Contents
 
 - [balance.proto](#balance.proto)
-    - [Balance](#balanceService.Balance)
-    - [CreateBalanceRequest](#balanceService.CreateBalanceRequest)
-    - [CreateBalanceResponse](#balanceService.CreateBalanceResponse)
-    - [GetBalanceRequest](#balanceService.GetBalanceRequest)
-    - [GetBalanceResponse](#balanceService.GetBalanceResponse)
+    - [Balance](#protoBalance.Balance)
+    - [CreateBalanceRequest](#protoBalance.CreateBalanceRequest)
+    - [CreateBalanceResponse](#protoBalance.CreateBalanceResponse)
+    - [GetBalanceRequest](#protoBalance.GetBalanceRequest)
+    - [GetBalanceResponse](#protoBalance.GetBalanceResponse)
   
-    - [balanceService](#balanceService.balanceService)
+    - [balanceService](#protoBalance.balanceService)
   
 - [Scalar Value Types](#scalar-value-types)
 
@@ -23,7 +23,7 @@
 
 
 
-<a name="balanceService.Balance"></a>
+<a name="protoBalance.Balance"></a>
 
 ### Balance
 Represents the user balance
@@ -41,7 +41,7 @@ Represents the user balance
 
 
 
-<a name="balanceService.CreateBalanceRequest"></a>
+<a name="protoBalance.CreateBalanceRequest"></a>
 
 ### CreateBalanceRequest
 Represents create user balance request.
@@ -49,14 +49,14 @@ Represents create user balance request.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| balance | [Balance](#balanceService.Balance) |  |  |
+| balance | [Balance](#protoBalance.Balance) |  |  |
 
 
 
 
 
 
-<a name="balanceService.CreateBalanceResponse"></a>
+<a name="protoBalance.CreateBalanceResponse"></a>
 
 ### CreateBalanceResponse
 Represents create user balance response.
@@ -71,7 +71,7 @@ Represents create user balance response.
 
 
 
-<a name="balanceService.GetBalanceRequest"></a>
+<a name="protoBalance.GetBalanceRequest"></a>
 
 ### GetBalanceRequest
 Represents user balance request.
@@ -87,7 +87,7 @@ Represents user balance request.
 
 
 
-<a name="balanceService.GetBalanceResponse"></a>
+<a name="protoBalance.GetBalanceResponse"></a>
 
 ### GetBalanceResponse
 Represents user balance response.
@@ -95,7 +95,7 @@ Represents user balance response.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| balance | [Balance](#balanceService.Balance) |  | User balance response. |
+| balance | [Balance](#protoBalance.Balance) |  | User balance response. |
 
 
 
@@ -108,15 +108,15 @@ Represents user balance response.
  
 
 
-<a name="balanceService.balanceService"></a>
+<a name="protoBalance.balanceService"></a>
 
 ### balanceService
 
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| CreateBalance | [CreateBalanceRequest](#balanceService.CreateBalanceRequest) | [CreateBalanceResponse](#balanceService.CreateBalanceResponse) | Create new users balance. |
-| GetBalance | [GetBalanceRequest](#balanceService.GetBalanceRequest) | [GetBalanceResponse](#balanceService.GetBalanceResponse) | Used to check your balance. |
+| CreateBalance | [CreateBalanceRequest](#protoBalance.CreateBalanceRequest) | [CreateBalanceResponse](#protoBalance.CreateBalanceResponse) | Create new users balance. |
+| GetBalance | [GetBalanceRequest](#protoBalance.GetBalanceRequest) | [GetBalanceResponse](#protoBalance.GetBalanceResponse) | Used to check your balance. |
 
  
 

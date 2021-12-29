@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	protobalance "github.com/olteffe/balancex/balance/internal/balance/proto"
 	"net"
 	"os"
 	"os/signal"
@@ -22,10 +23,13 @@ import (
 
 	"github.com/olteffe/balancex/balance/config"
 	balanceGrpc "github.com/olteffe/balancex/balance/internal/balance/delivery/grpc"
-	balService "github.com/olteffe/balancex/balance/internal/balance/proto"
-	"github.com/olteffe/balancex/balance/internal/balance/repository"
-	"github.com/olteffe/balancex/balance/internal/balance/service"
+	balRepo "github.com/olteffe/balancex/balance/internal/balance/repository"
+	balService "github.com/olteffe/balancex/balance/internal/balance/service"
 	"github.com/olteffe/balancex/balance/internal/interceptors"
+	transactionGrpc "github.com/olteffe/balancex/balance/internal/transaction/delivery/grpc"
+	"github.com/olteffe/balancex/balance/internal/transaction/proto"
+	tranRepo "github.com/olteffe/balancex/balance/internal/transaction/repository"
+	tranService "github.com/olteffe/balancex/balance/internal/transaction/service"
 	"github.com/olteffe/balancex/balance/pkg/logger"
 	"github.com/olteffe/balancex/balance/pkg/metrics"
 )
@@ -58,8 +62,13 @@ func (s *Server) Run() error {
 	)
 
 	im := interceptors.NewInterceptorManager(s.logger, s.cfg, metric)
-	balanceRepository := repository.NewBalanceRepository(s.pgxPool)
-	balanceService := service.NewBalanceService(balanceRepository, s.logger, s.cfg)
+	balanceRepository := balRepo.NewBalanceRepository(s.pgxPool)
+	balanceRedisRepository := balRepo.NewBalanceRedisRepo(s.redis, s.logger)
+	balanceService := balService.NewBalanceService(balanceRepository, balanceRedisRepository, s.logger)
+
+	transactionRepository := tranRepo.NewTransactionRepository(s.pgxPool)
+	transactionRedisRepository := tranRepo.NewTransactionRedisRepo(s.redis, s.logger)
+	transactionService := tranService.NewTransactionService(transactionRepository, transactionRedisRepository, s.logger)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	router := echo.New()
@@ -76,7 +85,12 @@ func (s *Server) Run() error {
 	if err != nil {
 		return err
 	}
-	defer l.Close()
+	defer func(l net.Listener) {
+		err := l.Close()
+		if err != nil {
+			s.logger.Errorf("Listen close: %v", err)
+		}
+	}(l)
 
 	server := grpc.NewServer(grpc.KeepaliveParams(keepalive.ServerParameters{
 		MaxConnectionIdle: s.cfg.Server.MaxConnectionIdle * time.Minute,
@@ -92,8 +106,11 @@ func (s *Server) Run() error {
 		),
 	)
 
-	balanceGrpcMicroservice := balanceGrpc.NewBalanceMicroservice(balanceService, s.logger, s.cfg)
-	balService.RegisterBalanceServiceServer(server, balanceGrpcMicroservice)
+	balanceGrpcMicroservice := balanceGrpc.NewBalanceService(balanceService, s.logger, s.cfg)
+	protobalance.RegisterBalanceServiceServer(server, balanceGrpcMicroservice)
+	transactionGrpcMicroservice := transactionGrpc.NewTransactionService(transactionService, s.logger, s.cfg)
+	protoTransaction.RegisterTransactionServiceServer(server, transactionGrpcMicroservice)
+
 	grpcPrometheus.Register(server)
 	s.logger.Info("Emails Service initialized")
 

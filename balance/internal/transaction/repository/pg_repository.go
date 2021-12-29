@@ -3,13 +3,15 @@ package repository
 import (
 	"context"
 	"fmt"
-	"github.com/olteffe/balancex/balance/pkg/utils"
+	"log"
 
+	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/opentracing/opentracing-go"
 
 	"github.com/olteffe/balancex/balance/internal/transaction/models"
 	gErrors "github.com/olteffe/balancex/balance/pkg/grpc_errors"
+	"github.com/olteffe/balancex/balance/pkg/utils"
 )
 
 // TransactionRepository Images Balance Repository
@@ -51,7 +53,12 @@ func (r *TransactionRepository) CreateTransaction(ctx context.Context, transacti
 	if err != nil {
 		return "", fmt.Errorf("CreateTransaction.Begin: %w", err)
 	}
-	defer tx.Rollback(ctx)
+	defer func(tx pgx.Tx, ctx context.Context) {
+		err := tx.Rollback(ctx)
+		if err != nil {
+			log.Printf("CreateTransaction.Rollback: %s", err)
+		}
+	}(tx, ctx)
 	decrease, err := tx.Exec(ctx, createTransactionDecreaseQuery, transaction.Amount, transaction.SenderID)
 	if err != nil {
 		return "", fmt.Errorf("CreateTransaction.Decrease: %w", err)
@@ -144,4 +151,19 @@ func (r *TransactionRepository) GetTransactions(ctx context.Context, transaction
 		HasMore:      transaction.GetHasMore(total),
 		Transactions: transactions,
 	}, nil
+}
+
+// FindUserID find userID
+func (r *TransactionRepository) FindUserID(ctx context.Context, transaction *utils.TransactionsRequest) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "TransactionRepository.FindUserID")
+	defer span.Finish()
+
+	var count int
+	if err := r.db.QueryRow(ctx, findUserIDQuery, transaction.UserID.String()).Scan(&count); err != nil {
+		if err == pgx.ErrNoRows {
+			return nil
+		}
+		return fmt.Errorf("FindUserID.QueryRowDB: %w", err)
+	}
+	return nil
 }

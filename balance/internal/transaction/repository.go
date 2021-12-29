@@ -13,5 +13,5 @@ type PGRepository interface {
 	CreateTransaction(ctx context.Context, transaction *models.Transaction) (string, error)
 	GetTransactions(ctx context.Context, transaction *utils.TransactionsRequest) (*models.TransactionList, error)
 	FindUsersID(ctx context.Context, transaction *models.Transaction) (bool, error)
-	FindUserID(ctx context.Context, transaction *utils.TransactionsRequest) (bool, error)
+	FindUserID(ctx context.Context, transaction *utils.TransactionsRequest) error
 }

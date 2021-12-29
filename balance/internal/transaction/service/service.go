@@ -56,12 +56,8 @@ func (t *transactionService) GetTransactions(ctx context.Context, transaction *u
 	span, ctx := opentracing.StartSpanFromContext(ctx, "transactionService.GetTransactions")
 	defer span.Finish()
 
-	exist, err := t.tranRepo.FindUserID(ctx, transaction)
-	if err != nil {
+	if err := t.tranRepo.FindUserID(ctx, transaction); err != nil {
 		return nil, fmt.Errorf("GetTransactions.FindUserID: %w", err)
-	}
-	if !exist {
-		return nil, fmt.Errorf("GetTransactions.FindUsersID: %w", grpc_errors.ErrUserExists)
 	}
 	return t.tranRepo.GetTransactions(ctx, transaction)
 }

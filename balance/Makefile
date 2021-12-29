@@ -39,7 +39,7 @@ linter:
 	gosec -tests ./...
 
 psql:
-	docker exec -it $(APP_NAME)-postges psql -U postgres -d password
+	docker exec -it $(APP_NAME)-postges psql -U postgres -d postgres
 
 gen:
 	go generate ./..

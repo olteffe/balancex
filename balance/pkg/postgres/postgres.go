@@ -21,12 +21,11 @@ const (
 // NewPgxConn pool
 func NewPgxConn(cfg *config.Config) (*pgxpool.Pool, error) {
 	ctx := context.Background()
-	dataSourceName := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=%s password=%s",
+	dataSourceName := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s",
 		cfg.Postgres.PostgresqlHost,
 		cfg.Postgres.PostgresqlPort,
 		cfg.Postgres.PostgresqlUser,
 		cfg.Postgres.PostgresqlDbname,
-		cfg.Postgres.PostgresqlSSLMode,
 		cfg.Postgres.PostgresqlPassword,
 	)
 
