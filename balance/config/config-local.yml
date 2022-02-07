@@ -1,10 +1,8 @@
 server:
   AppVersion: 1.0.0
-  Port: :5000
+  Port: :9000
   PprofPort: :5555
   Mode: Development
-  JwtSecretKey: secretkey
-  CookieName: jwt-token
   ReadTimeout: 5
   WriteTimeout: 5
   SSL: false
@@ -24,7 +22,7 @@ logger:
   Level: info
 
 postgres:
-  PostgresqlHost: localhost
+  PostgresqlHost: 0.0.0.0
   PostgresqlPort: 5432
   PostgresqlUser: postgres
   PostgresqlPassword: postgres
@@ -33,7 +31,7 @@ postgres:
   PgDriver: pgx
 
 redis:
-  RedisAddr: localhost:6379
+  RedisAddr: 0.0.0.0:6379
   RedisPassword:
   RedisDb: 0
   RedisDefaultdb: 0
@@ -43,22 +41,11 @@ redis:
   Password: ""
   DB: 0
 
-cookie:
-  Name: jwt-token
-  MaxAge: 86400
-  Secure: false
-  HttpOnly: true
-
-session:
-  Name: session-id
-  Prefix: api-session
-  Expire: 3600
-
 metrics:
   Url: 0.0.0.0:7070
   ServiceName: balance_microservice
 
 jaeger:
-  Host: localhost:6831
+  Host: 0.0.0.0:6831
   ServiceName: balance_service
   LogSpans: false

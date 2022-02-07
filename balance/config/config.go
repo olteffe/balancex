@@ -12,7 +12,6 @@ type Config struct {
 	Server   ServerConfig
 	Postgres PostgresConfig
 	Redis    RedisConfig
-	Session  Session
 	Metrics  Metrics
 	Logger   Logger
 	Jaeger   Jaeger
@@ -24,8 +23,6 @@ type ServerConfig struct {
 	Port              string
 	PprofPort         string
 	Mode              string
-	JwtSecretKey      string
-	CookieName        string
 	ReadTimeout       time.Duration
 	WriteTimeout      time.Duration
 	SSL               bool
@@ -69,13 +66,6 @@ type RedisConfig struct {
 	PoolTimeout    int
 	Password       string
 	DB             int
-}
-
-// Session config
-type Session struct {
-	Prefix string
-	Name   string
-	Expire int
 }
 
 // Metrics config

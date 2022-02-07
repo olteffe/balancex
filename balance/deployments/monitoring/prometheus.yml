@@ -11,6 +11,6 @@ scrape_configs:
     static_configs:
       - targets: ['node_exporter:9100']
 
-  - job_name: 'email-microservice'
+  - job_name: 'balance-microservice'
     static_configs:
-      - targets: ['email-microservice:7070']
+      - targets: ['balance-microservice:7070']

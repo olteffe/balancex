@@ -37,7 +37,7 @@ func NewApiLogger(cfg *config.Config) *apiLogger {
 	return &apiLogger{cfg: cfg}
 }
 
-// For mapping config logger to email_service logger levels
+// For mapping config logger to balance_service logger levels
 var loggerLevelMap = map[string]zapcore.Level{
 	"debug":  zapcore.DebugLevel,
 	"info":   zapcore.InfoLevel,

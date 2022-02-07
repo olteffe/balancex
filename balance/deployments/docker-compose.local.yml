@@ -2,8 +2,8 @@ version: "3.8"
 
 services:
   postgesql:
-    image: postgres:14.0-alpine
-    container_name: balance-postges
+    image: postgres:14.1-alpine
+    container_name: balance_postges
     ports:
       - "5432:5432"
     restart: always
@@ -17,7 +17,7 @@ services:
       - dev-network
 
   prometheus:
-    container_name: prometheus_container
+    container_name: balance_prometheus
     image: prom/prometheus
     volumes:
       - ./monitoring/prometheus-local.yml:/etc/prometheus/prometheus.yml:Z
@@ -33,7 +33,7 @@ services:
       - dev-network
 
   node_exporter:
-    container_name: node_exporter_container
+    container_name: balance_node_exporter
     image: prom/node-exporter
     ports:
       - '9101:9100'
@@ -41,7 +41,7 @@ services:
       - dev-network
 
   grafana:
-    container_name: grafana_container
+    container_name: balance_grafana
     image: grafana/grafana
     ports:
       - '3000:3000'
@@ -49,9 +49,9 @@ services:
       - dev-network
 
   jaeger:
-    container_name: jaeger_container
+    container_name: balance_jaeger
     restart: always
-    image: jaegertracing/all-in-one:1.28
+    image: jaegertracing/all-in-one:1.31
     environment:
       - COLLECTOR_ZIPKIN_HTTP_PORT=9411
     ports:
@@ -63,6 +63,15 @@ services:
       - "14268:14268"
       - "14250:14250"
       - "9411:9411"
+    networks:
+      - dev-network
+
+  redis:
+    image: redis:6.2.6-alpine
+    container_name: balance_redis
+    ports:
+      - "6379:6379"
+    restart: always
     networks:
       - dev-network
 

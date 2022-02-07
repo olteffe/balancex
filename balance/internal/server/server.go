@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	protobalance "github.com/olteffe/balancex/balance/internal/balance/proto"
 	"net"
 	"os"
 	"os/signal"
@@ -23,6 +22,7 @@ import (
 
 	"github.com/olteffe/balancex/balance/config"
 	balanceGrpc "github.com/olteffe/balancex/balance/internal/balance/delivery/grpc"
+	protoBalance "github.com/olteffe/balancex/balance/internal/balance/proto"
 	balRepo "github.com/olteffe/balancex/balance/internal/balance/repository"
 	balService "github.com/olteffe/balancex/balance/internal/balance/service"
 	"github.com/olteffe/balancex/balance/internal/interceptors"
@@ -107,12 +107,12 @@ func (s *Server) Run() error {
 	)
 
 	balanceGrpcMicroservice := balanceGrpc.NewBalanceService(balanceService, s.logger, s.cfg)
-	protobalance.RegisterBalanceServiceServer(server, balanceGrpcMicroservice)
+	protoBalance.RegisterBalanceServiceServer(server, balanceGrpcMicroservice)
 	transactionGrpcMicroservice := transactionGrpc.NewTransactionService(transactionService, s.logger, s.cfg)
 	protoTransaction.RegisterTransactionServiceServer(server, transactionGrpcMicroservice)
 
 	grpcPrometheus.Register(server)
-	s.logger.Info("Emails Service initialized")
+	s.logger.Info("Balance Service initialized")
 
 	if s.cfg.Server.Mode != "Production" {
 		reflection.Register(server)
